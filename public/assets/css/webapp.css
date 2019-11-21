@@ -1,0 +1,108 @@
+
+#searchid td {
+    padding: 1px;
+}
+
+.control-label {
+    margin-bottom: 0;
+    padding-top: 7px;
+    text-align: right;
+}
+td select {
+    height:26px;
+}
+
+table.dataTable tbody th.dt-body-center,
+table.dataTable tbody td.dt-body-center,
+th.dt-body-center {
+    text-align: center;
+}
+
+table.dataTable tbody th.dt-body-right,
+table.dataTable tbody td.dt-body-right,
+th.dt-body-right {
+    text-align: right;
+}
+
+table.dataTable tbody tr.selected {
+    background-color: #BBDEFB !important;
+}
+
+table.dataTable tbody tr {
+    cursor: pointer;
+}
+
+.pinggiran {
+    border: 1px #ccc dashed; 
+    padding: 10px;
+}
+
+.mandatory {
+    border-left: 5px #1CAF9A solid;
+}
+
+.pinggir-kanan{
+    border-right:1px #ccc dashed;
+}
+
+li.nav-dropdown.open > a {
+    border-left: 3px #fa0000 solid !important;
+}
+
+nav i.fa-plus-square {
+    color : grey;
+}
+
+/*body:not(.top-nav) .sidebar ul.nav li.nav-item.nav-dropdown.open {
+    border-left: 2px red solid;
+}*/
+
+.blink-me {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+    50% { opacity: 0.0; }
+}
+
+.x-navigation > li.xn-logo > a:first-child {
+    background: #fff !important
+}
+.page-container {
+    background: #fff;
+}
+
+
+.x-navigation li > ul li > a:hover { 
+    background: #2F3785 !important;
+}
+
+.x-navigation li > ul li > a:hover, .x-navigation li > a:hover { 
+    background: #2F3785 !important;
+}
+.x-navigation li.active > a {
+    background: #2F3785 !important;
+}
+
+.input-group-addon a  {
+    color :#fff;
+}
+
+.btn-info {
+    background-color: #2F3785;
+    border-color: #ccc;
+}
+
+.clrbg-green {
+    background: #5CB85C;
+}
+.clrbg-red {
+    background: #D9534F ;
+}
+.clrbg-yellow {
+    background: #F0AD4E;
+}
+
+
+
+

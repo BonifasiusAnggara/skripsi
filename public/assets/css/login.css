@@ -1,0 +1,24 @@
+.login-body {
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.55);
+    border-radius: 25px;
+    -moz-border-radius: 25px;
+}
+
+.login-container { 
+    background: #33414e;//url(../img/loginbg.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.login-container .login-box .login-body {
+    background: rgba(255, 255, 255,1);
+}
+.login-container input.form-control {
+    color: #000 !important;
+}
+
+.login-container .login-box .login-body .login-title {
+    color: #33414e !important;
+}
