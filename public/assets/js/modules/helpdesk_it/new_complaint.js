@@ -120,7 +120,7 @@
 			}},
 			{data: 'complaint_status'},
             {data: 'id', className: "dt-body-center", orderable: false, width: "5%", render: function (data, type, meta) {
-                    return '<a title="View" href="helpdesk_it/New_complaint/detail/'+ data +'" class="btn btn-warning btn-sm btn-line"><i class="fa  fa-eye"></i></a>';
+                    return '<a title="View" href="helpdesk_it/Complaint_detail/?id='+ data +'" class="btn btn-warning btn-sm btn-line"><i class="fa  fa-eye"></i></a>';
                 }
             }
         ]

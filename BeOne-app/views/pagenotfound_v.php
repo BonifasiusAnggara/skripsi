@@ -11,7 +11,7 @@
         <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
         <title>BeOne - Web Application :: 404</title>
         <!-- Main styles for this application -->
-        <link href="assets/themes/BeOne/css/style.css" rel="stylesheet">
+        <link href="assets/themes/css/theme-default.css" rel="stylesheet">
     </head>
     <body class="">
         <div class="container">
@@ -20,15 +20,14 @@
                     <div class="clearfix">
                         <h1 class="pull-left display-3 m-r-2">404</h1>
                         <h4 class="p-t-1">Oops! You're lost.</h4>
-                        <p class="text-muted">The page you are looking for was not found.</p>
+                        <p class="text-muted">The page you are looking for was not found.<div class="btn-group btn-group-justified"><a class="btn btn-info" href="<?php echo base_url();?>">Back To Home</a><a class="btn btn-warning" href="#" onclick="window.history.back()">Return Previous page</a></div></p>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Bootstrap and necessary plugins -->
-        <script src="assets/js/libs/jquery/jquery.min.js"></script>
-        <script src="assets/themes/BeOne/js/libs/tether.min.js"></script>
-        <script src="assets/themes/BeOne/js/libs/bootstrap.min.js"></script>
+        <script src="assets/libs/jquery/jquery.min.js"></script>
+        <script src="assets/libs/bootstrap/js/bootstrap.min.js"></script>
         <script>
             function verticalAlignMiddle()
             {

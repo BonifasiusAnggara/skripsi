@@ -3,14 +3,36 @@
         <div class="panel panel-danger">
             <div class="panel-heading ui-draggable-handle">
                 <h3 class="panel-title"><i class="fa fa-file"></i>&nbsp;<strong id="ftitle">No. Tiket</strong> <?=$complaint->no_tiket?></h3>
+
                 <?php if ($usergroup_id == 1 || $usergroup_id == 4) { ?>
                 <ul class="panel-controls">
-                    <a class="btn btn-success btn-action-class" target="blank_" title="Assign" id="btn-assign"><i class="fa fa-search"></i>&nbsp;Assign to Teknisi</a>
+                    <?php if ($complaint->complaint_status_id == 1) { ?>
+                        <a class="btn btn-success btn-action-class" target="blank_" title="Assign" id="btn-assign"><i class="fa fa-search"></i>&nbsp;Assign to Teknisi</a>
+                    <?php } else { ?>
+                        <span class="label label-info">Status: <?=$complaint->complaint_status?></span>
+                    <?php } ?>
+                </ul>
+
+                <?php } else if ($usergroup_id == 3) { ?>
+                <ul class="panel-controls">
+                <?php if ($complaint->complaint_status_id == 2) { ?>
+                        <a class="btn btn-success btn-action-class" target="blank_" title="Accept" id="btn-accept"><i class="fa fa-check"></i>&nbsp;Accept the assignment</a>
+                <?php } else if ($complaint->complaint_status_id == 3) { ?>
+                        <a class="btn btn-success btn-action-class" target="blank_" title="Accept" id="btn-solution"><i class="fa fa-cloud-upload"></i>&nbsp;Input Solution</a>
+                <?php } else { ?>
+                        <span class="label label-info">Status: <?=$complaint->complaint_status?></span>
+                <?php } ?>
+                </ul>
+
+                <?php } else { ?>
+                <ul class="panel-controls">
+                    <li><span class="label label-info">Status: <?=$complaint->complaint_status?></span></li>
                 </ul>
                 <?php } ?>
             </div>
 
             <div class="panel-body">
+                <input type="hidden" id="complaint_id" value="<?=$complaint->id?>">
             	<div class="row">
             		<div class="col-lg-6">
             			<table class="table table-striped">
@@ -115,6 +137,7 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<?php if ($usergroup_id == 1 || $usergroup_id == 4) { ?>
 <!-- Modal Assign -->
 <div class="modal fade modal-assign-proposal" id="assign_proposal" tabindex="-1" role="dialog" aria-labelledby="assign_proposal" aria-hidden="true">
     <div class="modal-dialog">
@@ -155,3 +178,46 @@
         </div>
     </div>
 </div>
+<?php } ?>
+
+<?php if ($usergroup_id == 3) { ?>
+<div class="modal fade modal-assign-proposal" id="input_solution" tabindex="-1" role="dialog" aria-labelledby="modal_solution" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="vpModalLabel"><i class="fa fa-edit"></i>&nbsp;Input Solution</h4>
+            </div>
+            <div class="modal-body"> 
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="mainForm" class="form-horizontal">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="form-group row">
+                                                <label for="address" class="control-label col-lg-4">Solution</label>
+                                                <div class="col-lg-8">
+                                                    <textarea type="text" autofocus="" id="solusi" name="solusi" placeholder="Solusi..." class="form-control" data-validation="required" ></textarea>
+                                                    <input type="hidden" name="complaint_id" value="<?=$complaint->id?>">
+                                                </div>
+                                            </div><!-- /.form-group -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="pull-right">
+                                        <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> Reset</button>
+                                        <button type="submit" class="btn btn-info"><i class="fa fa-check"></i> Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php } ?>

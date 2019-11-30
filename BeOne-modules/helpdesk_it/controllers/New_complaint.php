@@ -163,6 +163,11 @@ class New_complaint extends BeOne_Controller {
             $where[0]['data'] = $this->user_id;
             $where[0]['sql'] = 'where';
             $cpData = $this->BeOnemdl->getDataTable($where);
+        } else if ($this->usergroup_id == 3) {
+            $where[0]['field'] = 'teknisi_id';
+            $where[0]['data'] = $this->user_id;
+            $where[0]['sql'] = 'where';
+            $cpData = $this->BeOnemdl->getDataTable($where);
         } else {
             $cpData = $this->BeOnemdl->getDataTable();
         }
@@ -187,4 +192,73 @@ class New_complaint extends BeOne_Controller {
         }
     }
 
+    /**
+     * Assign Complaint to Teknisi
+     */
+    function assignToTeknisi() {
+        checkIfNotAjax();
+        $this->libauth->check(__METHOD__);
+        $postData = $this->input->post(NULL, TRUE);
+        
+        $postData['complaint_status_id'] = 2;
+        $id = $postData['complaint_id'];
+        unset($postData['complaint_id']);
+
+
+        $this->BeOnemdl->table = 'complaint';
+        $status = $this->BeOnemdl->update($postData, 'id=' . $id);
+        if ($status == 'true') {
+            $json['msg'] = '1';
+            echo json_encode($json);
+        } else {
+            $json['msg'] = $status;
+            echo json_encode($json);
+        }
+    }
+
+    /**
+     * Teknisi accept assignment
+     */
+    function acceptAssignment() {
+        checkIfNotAjax();
+        $this->libauth->check(__METHOD__);
+        $postData = $this->input->post(NULL, TRUE);
+        
+        $postData['complaint_status_id'] = 3;
+        $id = $postData['complaint_id'];
+        unset($postData['complaint_id']);
+
+        $this->BeOnemdl->table = 'complaint';
+        $status = $this->BeOnemdl->update($postData, 'id=' . $id);
+        if ($status == 'true') {
+            $json['msg'] = '1';
+            echo json_encode($json);
+        } else {
+            $json['msg'] = $status;
+            echo json_encode($json);
+        }
+    }
+
+    /**
+     * Teknisi input solution
+     */
+    function inputSolution() {
+        checkIfNotAjax();
+        $this->libauth->check(__METHOD__);
+        $postData = $this->input->post(NULL, TRUE);
+        
+        $postData['complaint_status_id'] = 4;
+        $id = $postData['complaint_id'];
+        unset($postData['complaint_id']);
+
+        $this->BeOnemdl->table = 'complaint';
+        $status = $this->BeOnemdl->update($postData, 'id=' . $id);
+        if ($status == 'true') {
+            $json['msg'] = '1';
+            echo json_encode($json);
+        } else {
+            $json['msg'] = $status;
+            echo json_encode($json);
+        }
+    }
 }

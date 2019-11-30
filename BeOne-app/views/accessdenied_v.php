@@ -11,7 +11,7 @@
         <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
         <title>BeOne - Web Application :: 403</title>
         <!-- Main styles for this application -->
-        <link href="assets/themes/BeOne/css/style.css" rel="stylesheet">
+        <link href="assets/themes/css/theme-default.css" rel="stylesheet">
     </head>
     <body class="">
         <div class="container">
@@ -26,9 +26,8 @@
             </div>
         </div>
         <!-- Bootstrap and necessary plugins -->
-        <script src="assets/js/libs/jquery/jquery.min.js"></script>
-        <script src="assets/themes/BeOne/js/libs/tether.min.js"></script>
-        <script src="assets/themes/BeOne/js/libs/bootstrap.min.js"></script>
+        <script src="assets/libs/jquery/jquery.min.js"></script>
+        <script src="assets/libs/bootstrap/js/bootstrap.min.js"></script>
         <script>
             function verticalAlignMiddle()
             {

@@ -4,7 +4,7 @@ class Oams_private_api extends MY_Controller {
     // Public $remote_ip_address;
     public $post_data;
     public $user_data;
-    private $get_asset_path = "assets/uploads/invoice_attachments/";
+    private $get_asset_path = "assets/images/foto_complaint/";
 
     // private $token_generator_key = "id.dma.user.key";
     private $token_generator_key = "7092de5ab8cb8c027159014fa07d915d97553168";
@@ -164,6 +164,8 @@ class Oams_private_api extends MY_Controller {
         $postData['complaint'] = $this -> post_data['complaint'];
         $postData['category_id'] = $this -> post_data['categoryId'];
         $postData['cakupan_id'] = $this -> post_data['cakupanId'];
+        $postData['image_url'] = $this -> post_data['image_url'];
+        $postData['image_filename'] = $this -> post_data['image_filename'];
 
         $bobot_category = $this->db->query("SELECT bobot FROM complaint_category WHERE id = '" .$postData['category_id']. "'")->row()->bobot;
         $bobot_cakupan = $this->db->query("SELECT bobot FROM cakupan_complaint WHERE id = '" .$postData['cakupan_id']. "'")->row()->bobot;
@@ -183,258 +185,41 @@ class Oams_private_api extends MY_Controller {
         $postData['nilai_likert'] = $bobot_category+$bobot_cakupan+$bobot_userlevel;
         $status = $this-> db ->insert("complaint", $postData);
         $id = $this->db->insert_id();
+        $data["id"] = $id;
+        $data["no_tiket"] = $postData['no_tiket'];
+
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $err = $this->db->error();
             $this -> json = array( "status" => $err );
         } else {
             $this->db->trans_commit();
-            $this -> json = array( "status" => $status ? "OK" : "NO" );
+            $this -> json = array( "status" => $status ? "OK" : "NO", "data" => $data );
         }
     }
 
-
-
-
-
-
-    public function calculation() {
-        $branchoffice_id = $this -> post_data['BranchofficeId'];
-        $monthyear = date('Y-m');
-        $this -> load -> model("Dashboard");
-        $data = $this -> Dashboard -> calculate($branchoffice_id);
-        $this -> json = array( "status" => "OK", "data" => $data, "monthyear" => $monthyear );
-    }
-
-    public function branchoffice() {
-        $params = array(
-            "table" => "branchoffice",
-            "select" => "id, branchofficename, shortname",
-            "where" => array("status" => "1")
-        );
-        $data = $this -> DataModel -> get_table($params);
-        $this -> json = array( "status" => "OK", "data" => $data );
-    }
-
-    public function activity_calculation() {
+    public function complaints() {
         $user_id = $this -> user_data["id"];
-        $usergroup_id = $this -> user_data["usergroup_id"];
-        $monthyear = date('Y-m');
 
-        $callplan = $this->db->query("SELECT COUNT(id) AS total FROM oams_callplan WHERE user_id = '$user_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear'")->row();
-        $call = $this->db->query("SELECT COUNT(id) AS total FROM oams_call WHERE user_id = '$user_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear'")->row();
-        $uncomplete = $this->db->query("SELECT COUNT(id) AS total FROM oams_call WHERE user_id = '$user_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear' AND check_out_mobile IS NULL")->row();
-        $completed = $this->db->query("SELECT COUNT(id) AS total FROM oams_call WHERE user_id = '$user_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear' AND check_out_mobile IS NOT NULL")->row();
-        if ($usergroup_id == '5' ){ //kacab
-            $approved = $this->db->query("SELECT COUNT(id) AS total FROM oams_call WHERE branchoffice_id = '$branchoffice_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear' AND approved = 1")->row();
-        } else {
-            $approved = $this->db->query("SELECT COUNT(id) AS total FROM oams_call WHERE user_id = '$user_id' AND CONVERT(VARCHAR(7), calldate, 121) = '$monthyear' AND approved = 1")->row();
-        }   
+        $complaint = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id'")->row();
+        $submit = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 1")->row();
+        $assigned = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 2")->row();
+        $on_progress = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 3")->row();
+        $pending = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 4")->row();
+        $unfinished = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 5")->row();
+        $finished = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 6")->row();
+        $cancel = $this->db->query("SELECT COUNT(id) AS total FROM complaint WHERE user_id = '$user_id' AND complaint_status_id = 7")->row();
         $this -> json = array(
             "status" => "OK",
-            "callplan" => $callplan->total,
-            "call" => $call->total,
-            "uncomplete" => $uncomplete->total,
-            "completed" => $completed->total,
-            "approved" => $approved->total
+            "complaint" => $complaint->total,
+            "submit" => $submit->total,
+            "assigned" => $assigned->total,
+            "on_progress" => $on_progress->total,
+            "pending" => $pending->total,
+            "unfinished" => $unfinished->total,
+            "finished" => $finished->total,
+            "cancel" => $cancel->total,
         );
-    }
-
-    public function entry_route() {
-        $cust_params = array(
-            "table" => "customer",
-            "select" => "id, status, branchoffice_id",
-            "where" => array("customer_code" => $this -> post_data["CustCode"]),
-            "single" => true,
-        );
-        $cust_data = $this -> DataModel -> get_single_data($cust_params);
-        
-        if ($cust_data == null) {
-            $this->json = array( 'status' => 'CUSTOMER_NOT_FOUND' );
-        } else {
-            if ($cust_data["status"] != 1) {
-                $this->json = array( 'status' => 'CUSTOMER_NOT_ACTIVE' );
-            } else if ($cust_data["branchoffice_id"] != $this -> user_data["branchoffice_id"]) {
-                $this->json = array( 'status' => 'CUSTOMER_NOT_MATCHED' );
-            } else {
-                $call_params = array(
-                    "table" => "oams_callplan",
-                    "select" => "id",
-                    "where" => array(
-                        "user_id" => intval($this -> user_data["id"]),
-                        "usergroup_id" => intval($this -> user_data["usergroup_id"]),
-                        "branchoffice_id" => $this -> user_data["branchoffice_id"],
-                        "customer_id" => $cust_data["id"],
-                        "calldate" => $this -> post_data["date"],
-                        "createdby" => $this -> user_data["id"]
-                    ),
-                    "single" => true
-                ); 
-                $call_data = $this -> DataModel -> get_single_data($call_params);
-                //var_dump($this->db->last_query()); exit;
-                if ($call_data != null) {
-                    $this->json = array( 'status' => 'CALLPLAN_EXIST' );
-                } else {
-                    $data_insert = array(
-                        "user_id" => intval($this -> user_data["id"]),
-                        "usergroup_id" => intval($this -> user_data["usergroup_id"]),
-                        "branchoffice_id" => $this -> user_data["branchoffice_id"],
-                        "customer_id" => $cust_data["id"],
-                        "calldate" => $this -> post_data["date"],
-                        "created" => date('Y-m-d H:i:s'),
-                        "createdby" => $this -> user_data["id"]
-                    );
-                    $insert = $this -> db -> insert("oams_callplan", $data_insert);
-                    
-                    $this -> json = array(
-                        "status" => $insert ? "OK" : "NO",
-                        "data" => $data_insert
-                    );
-                }
-            }            
-        }
-    }
-
-    public function route() {
-        $id = $this -> user_data["id"]; 
-        $date = $this -> post_data["date"];
-        // $date = date('Y-m-d');
-        
-        $params_route = array(
-            "select" => "t1.id, t1.user_id, t1.calldate, t1.customer_id, t1.checked, t2.customer_code, t2.customer_name, t2.customer_phone, t1.orderplan, t2.customer_address, t2.customer_group_name, t1.branchoffice_id, branchoffice.branchofficename, users.fullname, users.usergroup_id",
-            "table" => "oams_callplan as t1",
-            "join" => array(
-                array("branchoffice", "t1.branchoffice_id = branchoffice.id"),
-                array("users", "t1.user_id = users.id"),
-                array("v_customer as t2", "t1.customer_id = t2.id")
-            ),
-            "where" => "\"t1\".\"user_id\" = ".$id." AND \"t1\".\"calldate\" = convert(datetime, '".$date."')",
-            "order" => "t1.id ASC"
-        );
-        $data = $this -> DataModel -> get_table($params_route);
-        
-        for ($i=0; $i < count($data); $i++) { 
-            $data[$i]["check_in_mobile"] = $this -> DataModel -> get_single_data(array(
-                "select" => "check_in_mobile",
-                "table" => "oams_call",
-                "where" => array( "user_id" => intval($this -> user_data["id"]),
-                    "customer_id" => intval($data[$i]["customer_id"]),
-                    "callplan_id" => $data[$i]["id"] )
-            ));
-            $data[$i]["check_out_mobile"] = $this -> DataModel -> get_single_data(array(
-                "select" => "check_out_mobile",
-                "table" => "oams_call",
-                "where" => array( "user_id" => intval($this -> user_data["id"]),
-                    "customer_id" => intval($data[$i]["customer_id"]),
-                    "callplan_id" => $data[$i]["id"] )
-            ));
-            $data[$i]["approved"] = $this -> DataModel -> get_single_data(array(
-                "select" => "approved, approve_time",
-                "table" => "oams_call",
-                "where" => array( "user_id" => intval($this -> user_data["id"]),
-                    "customer_id" => intval($data[$i]["customer_id"]),
-                    "callplan_id" => $data[$i]["id"] )
-            ));
-            
-        }
-
-        $this -> json = array( "status" => "OK", "data" => $data );
-    }
-
-    public function delete_route() {
-        $id = $this -> post_data["routeId"];
-        $query = $this->db->query("SELECT * FROM oams_callplan WHERE id = '$id'")->row();
-        if ($query->checked != 1) {
-            $this -> db ->delete("oams_callplan", array( "id" => $this -> post_data["routeId"] ));
-            $this -> json = array( "status" => "OK" ); 
-        } else {
-            $this -> json = array( "status" => "ALREADY_CHECK_IN" );
-        }        
-    }
-
-    public function reorder_route() {
-        $id = $this -> post_data['id'];
-        $user_id = $this -> user_data["id"];
-        $date = date('Y-m-d H:i:s');
-        $a = 0;
-        for ($i = 0; $i < count($id); $i++) {
-            $data = array('orderplan' => $i, 'updated' => $date, 'updatedby' => $user_id);            
-            if ($this->db->update('oams_callplan', $data, array('id' => $id[$i]))) {
-                $a++;
-            }
-        }
-
-        if ($a > 0) {
-            $this -> json = array( "status" => "OK" );
-        }
-    }
-
-    public function route_detail() {
-        $params_route = array(
-            "select" => "t1.user_id, t1.calldate, t1.customer_id, t1.checked AS visited, t2.customer_code, t2.customer_name, t2.customer_address, t2.customer_group_name, t2.customer_phone, t1.id, t1.branchoffice_id, branchoffice.branchofficename, users.fullname, users.usergroup_id",
-            "table" => "oams_callplan as t1",
-            "join" => array(
-                array("branchoffice", "t1.branchoffice_id = branchoffice.id"),
-                array("users", "t1.user_id = users.id"),
-                array("v_customer as t2", "t1.customer_id = t2.id")
-            ),
-            "where" => array( "t1.id" => $this -> post_data["routeId"] ),
-            "single" => true
-        );
-        $data = $this -> DataModel -> get_single_data($params_route);
-        $data["checked"] = $this -> db -> get_where("oams_call", array("user_id" => $this -> user_data["id"], "customer_id" => $data["customer_id"], "callplan_id" => $data["id"]))->result_array();
-        $this -> json = array( "status" => "OK", "data" => $data );
-    }
-
-    function call_method() {
-         $data = $this -> DataModel -> get_table(array(
-            "select" => "id, method",
-            "table" => "oams_call_method"
-        ));
-        
-        $this -> json = array( "status" => "OK", "data" => $data );
-    }
-
-    public function checkin() {
-        // $this -> json = array("status" => "OK");
-        $call_data = array();
-        $call_data["user_id"] = intval($this -> user_data["id"]);
-        $call_data["callplan_id"] = intval($this -> post_data["id"]);
-        $call_data["usergroup_id"] = intval($this -> user_data["usergroup_id"]);
-        $call_data["branchoffice_id"] = intval($this -> user_data["branchoffice_id"]);
-        $call_data["check_in_mobile"] = date("H:i:s", time());
-        $call_data["calldate"] = date("Y-m-d");
-        $call_data["status"] = "0";
-        $call_data["method_id"] = $this -> post_data["methodId"];
-        $call_data["customer_id"] = intval($this -> post_data["customer_id"]);
-        $call_data["latitude"] = $this -> post_data["latitude"];
-        $call_data["longitude"] = $this -> post_data["longitude"];
-        $call_data["created"] = date('Y-m-d H:i:s');
-        $call_data["createdby"] = $this -> user_data["id"];
-
-        $check = $this -> DataModel -> get_table(array(
-            "table" => "oams_call",
-            "where" => array(
-                "user_id" => intval($this -> user_data["id"]),
-                "customer_id" => intval($this -> post_data["customer_id"]),
-                "calldate" => $call_data["calldate"]
-            )
-        ));
-
-        if ( count($check) < 1 ) {
-            $insert_call = $this -> db -> insert("oams_call", $call_data);
-            $insert_call_id = $this -> db -> insert_id();
-
-            if ( $insert_call ) {
-                $update_calplan = $this -> db -> update("oams_callplan", array("checked" => "1", "updated" => date('Y-m-d H:i:s'), "updatedby" => $this -> user_data["id"]), array("calldate" => $call_data["calldate"], "customer_id" => $this -> post_data["customer_id"]));
-                $update_customer = $this -> db -> update("customer", array("latitude" => $this -> post_data["latitude"], "longitude" => $this -> post_data["longitude"], "geotag_update" => "0"), array("id" => $this -> post_data["customer_id"]));
-                $this -> json = array( "status" => $update_calplan && $update_customer ? "OK" : "NO" );
-            } else {
-                $this -> json = array( "status" => "NO" );
-            }
-        } else {
-            $this -> json = array( "status" => "ALREADY_CHECK_IN" );
-        }
     }
 
 }

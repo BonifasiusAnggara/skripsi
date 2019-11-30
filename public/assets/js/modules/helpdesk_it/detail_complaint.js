@@ -36,6 +36,7 @@
             {data: 'branchofficename'},
             {data: 'departmentname'},
             {data: 'userlevelname'},
+            {data: 'id', visible: false, searchable: false, className: 'never'}
         ],
         order: [
             [1, 'asc']
@@ -61,29 +62,101 @@
         t.columns().search('').draw();
     });
 
-    // $("#listTeknisi").click(function (e) {
-    //     e.preventDefault();
+    $("#listTeknisi").click(function (e) {
+        e.preventDefault();
 
-    //     var dr = t.rows('.selected').data();
+        var dr = t.rows('.selected').data();
 
-    //     $.each(dr, function (i, val) {
-    //         var id_proposal = $('#id_proposal').val();
-    //         var category_id = $('#category_id').val();
-    //         $.ajax({
-    //             type: 'POST',
-    //             url: baseUrl + 'relawan/Survey_pendidikan_assign/assign_relawan_pendidikan',
-    //             data: 'id=' + val.id + '&&id_proposal=' + id_proposal + '&&category_id=' + category_id,
-    //             beforeSend: function () {
-    //                 $('.modal-wait-for-callback').modal({
-    //                     backdrop: 'static',
-    //                     keyboard: false
-    //                 });
-    //             },
-    //             success: function (response) {
-    //                 window.location.href = baseUrl + 'relawan/Survey_pendidikan';
-    //             }
-    //         });
-    //         $("#modal-assign-proposal").modal('hide');
-    //     });
-    // });
+        var teknisi_id = dr[0].id;
+        var complaint_id = $("#complaint_id").val();
+        
+        $.ajax({
+            type: 'POST',
+            url: baseUrl + 'helpdesk_it/New_complaint/assignToTeknisi',  
+            data: {'teknisi_id': teknisi_id, 'complaint_id': complaint_id},
+            beforeSend: function () {
+                $('.modal-wait-for-callback').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            },
+            success: function (response) {
+                resp = JSON.parse(response);
+                console.log(resp.msg);
+                if (resp.msg == 1) {
+                    alertify.success("Assign Data Success");
+                    location.reload();
+                } else {
+                    alertify.success(response);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alertify.success(XMLHttpRequest);
+                alertify.success(textStatus);
+                alertify.success(errorThrown);
+            }
+        });
+        $(".modal-assign-proposal").modal('hide');
+    });
+
+    $("#btn-accept").click(function (e) {
+        e.preventDefault();
+        var complaint_id = $("#complaint_id").val();
+        $.ajax({
+            type: 'POST',
+            url: baseUrl + 'helpdesk_it/New_complaint/acceptAssignment',  
+            data: {'complaint_id': complaint_id},
+            success: function (response) {
+                resp = JSON.parse(response);
+                console.log(resp.msg);
+                if (resp.msg == 1) {
+                    alertify.success("Accept Data Success");
+                    location.reload();
+                } else {
+                    alertify.success(response);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alertify.success(XMLHttpRequest);
+                alertify.success(textStatus);
+                alertify.success(errorThrown);
+            }
+        });
+    });
+
+    $("#btn-solution").click(function (e) {       
+        $(".modal-dialog").width('950px');
+        $("#input_solution").modal('show');
+    });
+    
+    //--- Form Submit
+    $("#mainForm").submit(function (e) {
+        e.preventDefault();
+        $(':submit', this).attr('disabled', true);
+    }).on('reset', function (e) {
+		$("#solusi").html('');
+		$(':submit').removeAttr('disabled');        
+    });
+    
+    $.validate({
+        form: "#mainForm",
+        validateOnBlur: false,
+        onError: function () {
+            dmafn.errMsg("Please fill form");
+        },
+        onSuccess: function () {
+            $.post('helpdesk_it/New_complaint/inputSolution', $("#mainForm").serialize(), function (obj) {
+				if (obj.msg == 1) {
+                    alertify.success("Input Solution Success");
+                    $("#mainForm")[0].reset();
+                    location.reload();
+                } else {
+					dmafn.errMsg(obj.msg);
+				}
+            }, "json").fail(function () {
+                dmafn.errMsg();
+            });
+        }
+    })
+    
 })(jQuery);

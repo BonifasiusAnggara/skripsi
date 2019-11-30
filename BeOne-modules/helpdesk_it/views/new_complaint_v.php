@@ -58,7 +58,7 @@
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <label style="padding-left: 48px">Upload Image</label>
-                                    <input type="file" class="file" data-preview-file-type="any" id="upload_image" name="upload_image" />
+                                    <input type="file" class="file" data-preview-file-type="any" id="upload_image" name="upload_image" data-validation="required" />
                                     <label id="uploaded_image" class="text-success"></label>
                                 </div>
                             </div>
@@ -86,10 +86,12 @@
             </div>
             <div class="panel-body">
                 <div id="mainTable" class="box-body">
+                    <?php if ($usergroup_id == 1) { ?>
                     <div style="padding: 0 20px 10px 20px" class="row">
                         <button class="btn btn-default toggle-selected" title="Toggle Selected" data-toggle="tooltip" data-placement="bottom"><i class="fa  fa-align-justify"></i></button> 
                         <button class="btn btn-danger delete-selected pull-right" title="Delete Rows" data-toggle="tooltip" data-placement="bottom"><i class="fa  fa-trash"></i></button> 
                     </div>
+                    <?php } ?>
                     <table class="table table-bordered table-condensed table-hover table-striped dataTable">
                         <thead>
                             <tr>
