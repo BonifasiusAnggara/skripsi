@@ -86,11 +86,11 @@
                                 <td>:</td>
                                 <td><?=$complaint->teknisi_name?></td>
                             </tr>
-                            <?php if ($usergroup_id == 1 || $usergroup_id == 4) { ?>
+                            <?php if ($usergroup_id == 1 || $usergroup_id == 4 || $usergroup_id == 3) { ?>
                             <tr>
-                                <td>Teknisi</td>
+                                <td>Nilai Likert</td>
                                 <td>:</td>
-                                <td><?=$complaint->teknisi_name?></td>
+                                <td><?=$complaint->nilai_likert?></td>
                             </tr>
                             <?php } ?>
                             <tr>

@@ -81,7 +81,7 @@
 		}
 	});
 
-	if (usergroup_id == 1 || usergroup_id == 4) {
+	if (usergroup_id == 1 || usergroup_id == 4 || usergroup_id == 3) {
 		column = [
             {data: "#", width: "5%", orderable: false, searchable: false},
 			{data: 'no_tiket'},
