@@ -222,4 +222,35 @@ class Oams_private_api extends MY_Controller {
         );
     }
 
+    public function register_fcm() {
+        $postData['token'] = $this -> post_data['fcm_token'];
+
+        $sql = $this->db->query("SELECT id FROM fcm_token WHERE user_id = '".$this -> user_data['id']."'");
+
+        $this->db->trans_begin(); 
+
+        if ($sql->num_rows() > 0) {
+            $postData['updated'] = date('Y-m-d H:i:s');
+            $postData['updatedby'] = $this -> user_data['id'];
+            $status = $this-> db ->update("fcm_token", $postData, "user_id = ".$this -> user_data['id']);
+            $type = "Update";
+        } else {
+            $postData['user_id'] = $this -> user_data['id'];
+            $postData['usergroup_id'] = $this -> user_data['usergroup_id'];
+            $postData['created'] = date('Y-m-d H:i:s');
+            $postData['createdby'] = $this -> user_data['id'];
+            $status = $this-> db ->insert("fcm_token", $postData);
+            $type = "Insert";
+        }
+        
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $err = $this->db->error();
+            $this -> json = array( "status" => $err );
+        } else {
+            $this->db->trans_commit();
+            $this -> json = array( "status" => $status ? "OK" : "NO", "type" => $type );
+        }
+    }
+
 }

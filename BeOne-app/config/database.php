@@ -75,11 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	// 'hostname' => 'DESKTOP-2OGGO1B\SQLEXPRESS',
-	'hostname' => '10.150.1.15\MSSQLTRIAL',
+	'hostname' => 'DESKTOP-2OGGO1B\SQLEXPRESS',
+	// 'hostname' => '10.150.1.15\MSSQLTRIAL',
 	'username' => 'sa',
-	// 'password' => 'PlanetE4rth',
-	'password' => 'SQLtri@l',
+	'password' => 'PlanetE4rth',
+	// 'password' => 'SQLtri@l',
 	'database' => 'SKRIPSI',
 	'dbdriver' => 'sqlsrv',
 	'dbprefix' => '',
