@@ -33,6 +33,7 @@
 
             <div class="panel-body">
                 <input type="hidden" id="complaint_id" value="<?=$complaint->id?>">
+                <input type="hidden" id="user_id" value="<?=$complaint->user_id?>">
             	<div class="row">
             		<div class="col-lg-6">
             			<table class="table table-striped">
@@ -148,7 +149,6 @@
             </div>
             <div class="modal-body">               
                 <div id="listTeknisi" class="panel-body">
-                    <input type="hidden" name="complaint_id" id="complaint_id">
                     <table class="table table-bordered table-condensed table-hover table-striped dataTable">
                         <thead>
                             <tr>
@@ -200,7 +200,6 @@
                                                 <label for="address" class="control-label col-lg-4">Solution</label>
                                                 <div class="col-lg-8">
                                                     <textarea type="text" autofocus="" id="solusi" name="solusi" placeholder="Solusi..." class="form-control" data-validation="required" ></textarea>
-                                                    <input type="hidden" name="complaint_id" value="<?=$complaint->id?>">
                                                 </div>
                                             </div><!-- /.form-group -->
                                         </div>

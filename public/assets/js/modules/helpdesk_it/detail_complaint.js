@@ -69,11 +69,12 @@
 
         var teknisi_id = dr[0].id;
         var complaint_id = $("#complaint_id").val();
+        var user_id = $("#user_id").val();
         
         $.ajax({
             type: 'POST',
             url: baseUrl + 'helpdesk_it/New_complaint/assignToTeknisi',  
-            data: {'teknisi_id': teknisi_id, 'complaint_id': complaint_id},
+            data: {'teknisi_id': teknisi_id, 'complaint_id': complaint_id, 'user_id': user_id},
             beforeSend: function () {
                 $('.modal-wait-for-callback').modal({
                     backdrop: 'static',
@@ -85,7 +86,7 @@
                 console.log(resp.msg);
                 if (resp.msg == 1) {
                     alertify.success("Assign Data Success");
-                    location.reload();
+                    // location.reload();
                 } else {
                     alertify.success(response);
                 }

@@ -125,7 +125,7 @@ class Oams_public_api extends MY_Controller {
             // check password
             if ($this->encrypt->hash($this -> post_data['password']) == $staff['password']) {
                 if ($staff['m_active'] == '1') {              
-                    if ($staff['usergroup_id'] == '2') {
+                    if ($staff['usergroup_id'] == '2' || $staff['usergroup_id'] == '3') {
                         unset($staff["password"]);
 
                         // password true

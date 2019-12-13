@@ -204,16 +204,63 @@ class New_complaint extends BeOne_Controller {
         $id = $postData['complaint_id'];
         unset($postData['complaint_id']);
 
+        $sql1 = $this->db->query("SELECT token FROM fcm_token WHERE user_id = '".$postData['user_id']."'")->row();
+        $sql2 = $this->db->query("SELECT token FROM fcm_token WHERE user_id = '".$postData['teknisi_id']."'")->row();
+
 
         $this->BeOnemdl->table = 'complaint';
         $status = $this->BeOnemdl->update($postData, 'id=' . $id);
         if ($status == 'true') {
-            $json['msg'] = '1';
-            echo json_encode($json);
+            $result1 = $this->push_notif($sql1->token, "Keluhan anda sedang ditangani oleh teknisi. Terima kasih");
+            $result2 = $this->push_notif($sql2->token, "Anda mendapat task baru dari agent. Terima kasih");
+            if ($result1 || $result2) {
+                $json['msg'] = '1';
+                echo json_encode($json);
+            }
         } else {
             $json['msg'] = $status;
             echo json_encode($json);
         }
+    }
+
+    private function push_notif($registration_ids, $message = '') {
+        $server_key = "AAAAKiOhOgU:APA91bHPKQOYMfCzyRLufzh7_WIBjI0fdxKL4dlF1FZST6d42UWuuVe3pQc-Jpr_e0_yuA-jtr553OVtGerfj0ucGHkvIx1WXFBCF3yLNvgCj36HO-0QF81vX-hTqrsIkCOkI8tNYXqX";
+
+        $title = "Pesan baru dari Agent";
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $headers = array(
+            'Authorization: key=' . $server_key,
+            'Content-Type: application/json'
+        );
+
+        $fields = array(
+            'notification' => array(
+                'title' => $title,
+                'body' => $message,
+                'sound' => 'default',
+                // 'click_action' => 'FCM_PLUGIN_ACTIVITY',
+                'icon' => 'fcm_push_icon'
+            ),
+            'registration_ids' => array($registration_ids),
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        if ($result === FALSE) {
+            die('Curl failed: ' . curl_error($ch));
+        } else {
+            return $result;
+        }
+
+        curl_close($ch);
+
+        // return array( "status" => "OK", "fcm" => $result );
     }
 
     /**
